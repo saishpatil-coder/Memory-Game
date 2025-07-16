@@ -1,8 +1,9 @@
-import React, { useState, useCallback, useEffect } from "react";
+import React, { useState, useCallback, useEffect, useRef } from "react";
 import GameBoard from "./GameBoard";
 import Controls from "./Controls";
 import FeedbackMessage from "./FeedbackMessage";
 import { getRandomSequence } from "../utils/gameUtils";
+import SampleGame from "./SampleGame";
 
 const CircleSection = () => {
   const LEVELS = [1,2,3,4,5,6,7,8,9,10];
@@ -16,6 +17,10 @@ const CircleSection = () => {
   const [feedback, setFeedback] = useState(null); // 'correct' | 'wrong' | 'completed' 
   const [gameState, setGameState] = useState('playing'); // 'playing' | 'transition' | 'levelUp'
   const [hintIndex, setHintIndex] = useState(null); // index of the circle to hint (glow)
+  const [nextCountdown, setNextCountdown] = useState(null); // countdown for Next button
+  const countdownTimeoutRef = useRef();
+  const [showSamplePage, setShowSamplePage] = useState(false);
+  const pendingNextRef = useRef(false);
 
   const totalCircles = LEVELS[level];
   const gridSize = GRID_SIZES[level];
@@ -31,17 +36,68 @@ const CircleSection = () => {
     setGameState('playing');
   }, [level]);
 
-  // Next button: show next in sequence, or transition to recall
+  // Countdown effect for Next button (robust single setTimeout approach)
+  useEffect(() => {
+    if (phase === 'memorize' && gameState === 'playing' && showIndex < sequence.length && !showSamplePage) {
+      setNextCountdown(3);
+      if (countdownTimeoutRef.current) clearTimeout(countdownTimeoutRef.current);
+      let count = 3;
+      const tick = () => {
+        count--;
+        setNextCountdown(count);
+        if (count > 0) {
+          countdownTimeoutRef.current = setTimeout(tick, 1000);
+        } else {
+          countdownTimeoutRef.current = null;
+          // Instead of handleNext, show sample page and mark pending next
+          pendingNextRef.current = true;
+          setShowSamplePage(true);
+        }
+      };
+      countdownTimeoutRef.current = setTimeout(tick, 1000);
+    } else {
+      setNextCountdown(null);
+      if (countdownTimeoutRef.current) {
+        clearTimeout(countdownTimeoutRef.current);
+        countdownTimeoutRef.current = null;
+      }
+    }
+    // Cleanup on unmount
+    return () => {
+      if (countdownTimeoutRef.current) {
+        clearTimeout(countdownTimeoutRef.current);
+        countdownTimeoutRef.current = null;
+      }
+    };
+  }, [phase, gameState, showIndex, sequence.length, showSamplePage]);
+
+  // Next button: show sample page, then advance on continue
   const handleNext = useCallback(() => {
-    if (showIndex < sequence.length - 1) {
-      setShowIndex((prev) => prev + 1);
-    } else if (showIndex === sequence.length - 1) {
-      // Last dot, trigger transition
-      setGameState('transition');
-      setTimeout(() => {
-        setPhase('recall');
-        setGameState('playing');
-      }, 1000);
+    if (countdownTimeoutRef.current) {
+      clearTimeout(countdownTimeoutRef.current);
+      countdownTimeoutRef.current = null;
+    }
+    setNextCountdown(null);
+    // Show sample page and mark pending next
+    pendingNextRef.current = true;
+    setShowSamplePage(true);
+  }, []);
+
+  // When continue is clicked on sample page
+  const handleContinueFromSample = useCallback(() => {
+    setShowSamplePage(false);
+    if (pendingNextRef.current) {
+      pendingNextRef.current = false;
+      // Actually advance the dot
+      if (showIndex < sequence.length - 1) {
+        setShowIndex((prev) => prev + 1);
+      } else if (showIndex === sequence.length - 1) {
+        setGameState('transition');
+        setTimeout(() => {
+          setPhase('recall');
+          setGameState('playing');
+        }, 1000);
+      }
     }
   }, [showIndex, sequence.length]);
 
@@ -102,6 +158,9 @@ const CircleSection = () => {
   }, [level]);
 
   // Render
+  if (showSamplePage) {
+    return <SampleGame onContinue={handleContinueFromSample} />;
+  }
   return (
     <section className="min-h-screen w-full flex items-center justify-center bg-gradient-to-br from-blue-100 to-emerald-100 font-sans">
       <div className="bg-white rounded-2xl shadow-2xl p-8 flex flex-col items-center w-full max-w-lg mx-4 border border-slate-200">
@@ -129,6 +188,7 @@ const CircleSection = () => {
           handleNext={handleNext}
           handleReset={handleReset}
           handleHint={handleHint}
+          nextCountdown={nextCountdown}
         />
         <div className="text-slate-700 text-sm font-medium mt-4">
           {phase === 'memorize'
@@ -140,15 +200,15 @@ const CircleSection = () => {
         <div className="flex flex-row gap-4 mt-6">
           <button
             onClick={handlePrevLevel}
-            className="px-4 py-2 rounded-lg font-semibold text-white bg-slate-500 hover:bg-slate-600 disabled:opacity-50"
+            className="px-4 py-2 rounded-lg font-semibold text-white bg-slate-500 hover:bg-slate-600"
             disabled={level === 0}
           >
             Previous Level
           </button>
           <button
             onClick={handleNextLevel}
-            className="px-4 py-2 rounded-lg font-semibold text-white bg-blue-600 hover:bg-blue-700 disabled:opacity-50"
-            disabled={feedback !== 'completed' || level === LEVELS.length - 1}
+            className="px-4 py-2 rounded-lg font-semibold text-white bg-blue-600 hover:bg-blue-700"
+            disabled={level === LEVELS.length - 1}
           >
             Next Level
           </button>
