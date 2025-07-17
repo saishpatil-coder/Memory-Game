@@ -62,19 +62,19 @@ const Controls = ({ phase, gameState, showIndex, sequenceLength, handleNext, han
         }
         return (
           <div key={ctrl.key} className="flex flex-col items-center">
-            <button
+      <button
               onClick={handlers[ctrl.handler]}
               className={`w-16 h-16 flex items-center justify-center rounded-full bg-white shadow-lg text-3xl transition-all duration-200 hover:scale-110 focus:outline-none focus:ring-2 focus:ring-blue-400 disabled:opacity-50 disabled:cursor-not-allowed`}
               disabled={isDisabled}
-            >
+      >
               <span className={`drop-shadow-sm`}>{ctrl.icon}</span>
-            </button>
+      </button>
             <span className="mt-1 text-sm font-semibold text-slate-700 select-none text-center" style={{lineHeight:'1.1'}}>{label}</span>
           </div>
         );
       })}
-    </div>
-  );
+  </div>
+);
 };
 
 export default Controls; 

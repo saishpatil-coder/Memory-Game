@@ -5,6 +5,7 @@ import FeedbackMessage from "./FeedbackMessage";
 import { getRandomSequence } from "../utils/gameUtils";
 import SampleGame from "./SampleGame";
 import { MdArrowBack, MdArrowForward, MdHome } from "react-icons/md";
+import RandomCircleBoard from "./RandomCircleBoard";
 
 const CircleSection = ({ onHome }) => {
   const LEVELS = [1,2,3,4,5,6,7,8,9,10];
@@ -190,7 +191,7 @@ const CircleSection = ({ onHome }) => {
             ? `Memorize the order of the glowing circles. Press Next to advance.`
             : `Click the circles in the memorized order. Level ${level + 1} of ${LEVELS.length}.`}
         </p>
-        <GameBoard
+        <RandomCircleBoard
           phase={phase}
           gridSize={gridSize}
           sequence={sequence}
@@ -199,6 +200,7 @@ const CircleSection = ({ onHome }) => {
           feedback={feedback}
           handleCircleClick={handleCircleClick}
           hintIndex={hintIndex}
+          level={level}
         />
         <Controls
           phase={phase}

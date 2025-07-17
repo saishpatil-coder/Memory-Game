@@ -7,8 +7,6 @@ const GameBoard = ({ phase, gridSize, sequence, showIndex, recallIndex, feedback
     let isCorrect = false;
     let isWrong = false;
     let isHint = false;
-    // Only show circles that are in the sequence
-    const visible = sequence.includes(i);
     if (phase === 'memorize') {
       isFilled = i === sequence[showIndex];
     } else {
@@ -21,7 +19,6 @@ const GameBoard = ({ phase, gridSize, sequence, showIndex, recallIndex, feedback
       <Circle
         key={i}
         isFilled={isFilled}
-        visible={visible}
         size="lg"
         accent={isHint ? 'yellow' : (phase === 'memorize' ? 'blue' : 'emerald')}
         onClick={phase === 'recall' ? () => handleCircleClick(i) : null}

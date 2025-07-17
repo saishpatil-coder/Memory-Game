@@ -68,26 +68,26 @@ export default function EmojiMatch({ onComplete }) {
       <div className="bg-white rounded-2xl shadow-2xl flex flex-col items-center justify-center p-4 w-full max-w-lg mx-auto">
         <h1 className="text-2xl font-bold mb-6 text-emerald-700">🎯 Emoji Match Game</h1>
         <div className={`grid gap-4 mb-4`} style={{ gridTemplateColumns: `repeat(${gridCols}, minmax(0, 1fr))` }}>
-          {cards.map((card, index) => {
-            const isFlipped = flipped.includes(index) || matched.includes(index);
-            return (
-              <motion.div
-                key={index}
+        {cards.map((card, index) => {
+          const isFlipped = flipped.includes(index) || matched.includes(index);
+          return (
+            <motion.div
+              key={index}
                 className={`w-16 h-16 bg-white rounded-xl shadow-lg flex items-center justify-center text-2xl cursor-pointer hover:scale-105 transition border-2
                   ${matched.includes(index) ? 'border-emerald-400' : isFlipped ? 'border-blue-400' : 'border-slate-200'}`}
-                onClick={() => handleFlip(index)}
-                whileTap={{ scale: 0.9 }}
-              >
-                {isFlipped ? card.emoji : "❓"}
-              </motion.div>
-            );
-          })}
-        </div>
-        {matched.length === cards.length && (
+              onClick={() => handleFlip(index)}
+              whileTap={{ scale: 0.9 }}
+            >
+              {isFlipped ? card.emoji : "❓"}
+            </motion.div>
+          );
+        })}
+      </div>
+      {matched.length === cards.length && (
           <div className="mt-6 text-lg font-semibold text-emerald-700 animate-bounce bg-white/90 rounded-xl px-4 py-2 shadow">
-            ✅ You Matched All!
-          </div>
-        )}
+          ✅ You Matched All!
+        </div>
+      )}
       </div>
     </div>
   );

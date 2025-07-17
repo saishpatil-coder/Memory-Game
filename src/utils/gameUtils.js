@@ -2,7 +2,7 @@
 export function getRandomSequence(length) {
   const seq = [];
   while (seq.length < length) {
-    const idx = Math.floor(Math.random() * (4 ** 2));
+    const idx = Math.floor(Math.random() * (12));
     if (!seq.includes(idx)) seq.push(idx);
   }
   return seq;

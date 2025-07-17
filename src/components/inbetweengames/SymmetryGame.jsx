@@ -112,9 +112,9 @@ const SymmetryGame = ({ onComplete }) => {
     setSelected(answer);
     if (answer === pattern.isSymmetrical) {
       setFeedback("Correct! This is " + (pattern.isSymmetrical ? "symmetrical." : "not symmetrical."));
-      setTimeout(() => onComplete && onComplete(), 1000);
-    } else {
-      setFeedback("Try again!");
+        setTimeout(() => onComplete && onComplete(), 1000);
+      } else {
+        setFeedback("Try again!");
     }
   };
 
@@ -124,7 +124,7 @@ const SymmetryGame = ({ onComplete }) => {
       <p className="text-slate-600 text-base mb-4 text-center w-full">Is this symmetrical?</p>
       <div className="mb-4">
         <PatternDisplay grid={pattern.grid} />
-      </div>
+          </div>
       <div className="flex gap-4 mb-4 w-full justify-center">
         <button
           onClick={() => handleAnswer(true)}
