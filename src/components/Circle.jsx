@@ -12,15 +12,18 @@ const accentMap = {
   yellow: "bg-yellow-400",
 };
 
-const Circle = ({ isFilled, size = "lg", accent = "blue", onClick, isCorrect, isWrong, isHint }) => (
+const Circle = ({ isFilled, visible = true, size = "lg", accent = "blue", onClick, isCorrect, isWrong, isHint }) => (
   <div
     onClick={onClick}
-    className={`rounded-full border-2 border-white flex items-center justify-center transition-all duration-300 select-none
-      ${sizeMap[size]} ${isFilled ? `${accentMap[accent]} shadow-lg` : "bg-slate-200"}
+    className={`rounded-full flex items-center justify-center transition-all duration-300 select-none
+      ${sizeMap[size]}
+      ${!visible ? 'bg-transparent border-0 shadow-none' : ''}
+      ${visible && isFilled ? `${accentMap[accent]} border-2 border-white shadow-lg` : ''}
+      ${visible && !isFilled ? 'bg-slate-200 border-2 border-white' : ''}
       ${isCorrect ? 'scale-110 ring-2 ring-emerald-400' : ''}
       ${isWrong ? 'animate-shake bg-rose-500' : ''}
       ${isHint ? 'ring-4 ring-yellow-300 animate-pulse' : ''}
-      ${onClick ? 'cursor-pointer hover:scale-105' : ''}`}
+      ${onClick && visible ? 'cursor-pointer hover:scale-105' : ''}`}
   />
 );
 

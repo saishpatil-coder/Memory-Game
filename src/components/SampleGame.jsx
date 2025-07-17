@@ -1,28 +1,7 @@
 import React, { useMemo } from "react";
 import OddOneOut from "./inbetweengames/OddOneOut";
-import MathPuzzle from "./inbetweengames/MathPuzzle";
-import PatternGame from "./inbetweengames/PatternGame";
-import TrueFalseGame from "./inbetweengames/TrueFalseGame";
 import EmojiMatch from "./inbetweengames/EmojiMatch";
-import HiddenShapeFinder from "./inbetweengames/HiddenShapeFinder";
-
-// Math puzzles
-const mathPuzzles = [
-  { question: "What is 7 + 6 × 2?", answer: 19 },
-  { question: "What is 15 - 3 × 4?", answer: 3 },
-  { question: "What is (8 + 2) × 5?", answer: 50 },
-  { question: "What is 9 × 9?", answer: 81 },
-  { question: "What is 100 ÷ 4?", answer: 25 },
-];
-
-// Pattern games
-const patternGames = [
-  { sequence: [2, 4, 8, 16], answer: 32 },
-  { sequence: [1, 1, 2, 3, 5, 8], answer: 13 },
-  { sequence: [5, 10, 20, 40], answer: 80 },
-  { sequence: [3, 6, 12, 24], answer: 48 },
-  { sequence: [10, 7, 4, 1], answer: -2 },
-];
+import SymmetryGame from "./inbetweengames/SymmetryGame";
 
 // True/False games
 const trueFalseGames = [
@@ -40,10 +19,7 @@ const trueFalseGames = [
 const games = [
   { component: OddOneOut, props: {} },
   { component: EmojiMatch, props: {} },
-  { component: HiddenShapeFinder, props: {} },
-  ...mathPuzzles.map(mp => ({ component: MathPuzzle, props: mp })),
-  ...patternGames.map(pg => ({ component: PatternGame, props: pg })),
-  ...trueFalseGames.map(tf => ({ component: TrueFalseGame, props: tf })),
+  { component: SymmetryGame, props: {} },
 ];
 
 const SampleGame = ({ onContinue }) => {
@@ -54,8 +30,8 @@ const SampleGame = ({ onContinue }) => {
   }, []);
 
   return (
-    <div className="min-h-screen w-full flex items-center justify-center bg-gradient-to-br from-blue-100 to-emerald-100 font-sans">
-      <div className="bg-white rounded-2xl shadow-2xl p-8 flex flex-col items-center w-full max-w-lg mx-4 border border-slate-200">
+    <div className="h-screen w-full flex items-center justify-center bg-gradient-to-br from-blue-200 via-emerald-100 to-emerald-200 font-sans p-0 m-0">
+      <div className="bg-white rounded-2xl shadow-2xl p-4 flex flex-col items-center w-full h-full sm:p-8 sm:shadow-none sm:bg-white">
         <GameComponent {...gameProps} onComplete={onContinue} />
       </div>
     </div>

@@ -20,10 +20,16 @@ const TOTAL_CELLS = GRID_SIZE * GRID_SIZE;
 
 const OddOneOut = ({ onComplete }) => {
   // Pick a random emoji set and odd index on mount
-  const { mainEmoji, oddEmoji, oddIndex } = useMemo(() => {
+  const { mainEmoji, oddEmoji, oddIndex, shuffledIndices } = useMemo(() => {
     const set = EMOJI_SETS[getRandomInt(EMOJI_SETS.length)];
     const oddIndex = getRandomInt(TOTAL_CELLS);
-    return { mainEmoji: set.main, oddEmoji: set.odd, oddIndex };
+    // Shuffle indices for random placement
+    const indices = Array.from({ length: TOTAL_CELLS }, (_, i) => i);
+    for (let i = indices.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [indices[i], indices[j]] = [indices[j], indices[i]];
+    }
+    return { mainEmoji: set.main, oddEmoji: set.odd, oddIndex, shuffledIndices: indices };
   }, []);
 
   const [selected, setSelected] = useState(null);
@@ -39,23 +45,23 @@ const OddOneOut = ({ onComplete }) => {
     }
   };
 
-  const cells = Array.from({ length: TOTAL_CELLS }).map((_, idx) => (
+  // Map shuffled indices to cell positions, odd one is at shuffledIndices[oddIndex]
+  const cells = shuffledIndices.map((cellIdx, gridIdx) => (
     <button
-      key={idx}
-      onClick={() => handleCellClick(idx)}
-      className={`w-14 h-14 text-3xl rounded-lg shadow flex items-center justify-center m-1 transition-all duration-200
-        ${selected === idx && idx === oddIndex ? 'ring-4 ring-emerald-400 scale-110' : ''}
-        ${selected === idx && idx !== oddIndex ? 'ring-4 ring-rose-400 scale-110' : ''}`}
-      style={{ background: '#fff' }}
+      key={gridIdx}
+      onClick={() => handleCellClick(gridIdx)}
+      className={`w-14 h-14 text-3xl rounded-xl shadow flex items-center justify-center m-1 transition-all duration-200 bg-white
+        ${selected === gridIdx && gridIdx === oddIndex ? 'ring-4 ring-emerald-400 scale-110' : ''}
+        ${selected === gridIdx && gridIdx !== oddIndex ? 'ring-4 ring-blue-400 scale-110' : ''}`}
     >
-      {idx === oddIndex ? oddEmoji : mainEmoji}
+      {gridIdx === oddIndex ? oddEmoji : mainEmoji}
     </button>
   ));
 
   return (
-    <div className="flex flex-col items-center w-full max-w-lg mx-4">
-      <h3 className="text-xl font-bold text-slate-800 mb-2">Odd One Out</h3>
-      <p className="text-slate-600 text-base mb-4 text-center max-w-xs">Spot the one emoji that doesn't match the rest!</p>
+    <div className="bg-white rounded-2xl shadow-2xl flex flex-col items-center w-full max-w-lg mx-4 py-6 px-2">
+      <h3 className="text-xl font-bold text-emerald-700 mb-2">Odd One Out</h3>
+      <p className="text-blue-700 text-base mb-4 text-center max-w-xs">Spot the one emoji that doesn't match the rest!</p>
       <div
         className="grid gap-2 mb-4"
         style={{
@@ -66,9 +72,8 @@ const OddOneOut = ({ onComplete }) => {
         {cells}
       </div>
       {feedback && (
-        <div className={`mb-4 text-base font-semibold ${feedback.startsWith('Correct') ? 'text-emerald-600' : 'text-rose-500'}`}>{feedback}</div>
+        <div className={`mb-4 text-base font-semibold ${feedback.startsWith('Correct') ? 'text-emerald-700' : 'text-blue-700'}`}>{feedback}</div>
       )}
-      {/* Continue button is not needed, auto-continue on correct */}
     </div>
   );
 };
